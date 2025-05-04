@@ -18,10 +18,10 @@ I:AddToggle({
                 local player = game.Players.LocalPlayer
                 local character = player.Character or player.CharacterAdded:Wait()
                 local hrp = character:WaitForChild("HumanoidRootPart")
-                
+
                 local chestFolder = workspace:WaitForChild("ChestModels")
                 local chestNames = {"GoldChest", "DiamondChest", "SilverChest"}
-                
+
                 local function getAllChests()
                     local chests = {}
                     for _, chest in pairs(chestFolder:GetChildren()) do
@@ -36,7 +36,7 @@ I:AddToggle({
                     end
                     return chests
                 end
-                
+
                 while autofarm do
                     local chests = getAllChests()
                     for _, chest in ipairs(chests) do
@@ -68,9 +68,10 @@ local islands = {
     ["Nghĩa địa"] = Vector3.new(-5398, 48, -737),
     ["Khu vực xanh"] = Vector3.new(-2267, 73, -2686),
     ["Lâu đài băng giá"] = Vector3.new(5988, 294, -6648),
-    ["Đảo đánh rip_indra"] = Vector3.new(-26820, 7, 385),
+    ["Đảo rip_indra"] = Vector3.new(-26820, 7, 385),
     ["Đảo trời"] = Vector3.new(-262, 49326, -35270),
     ["Núi tuyết"] = Vector3.new(793, 412, -5251),
+    ["Quán cà phê"] = Vector3.new(-385, 73, 297),
 }
 
 for name, position in pairs(islands) do
