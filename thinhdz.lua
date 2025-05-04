@@ -1,28 +1,28 @@
-local M = loadstring(game:HttpGet("https://raw.githubusercontent.com/LuaCrack/Setting/refs/heads/main/427daa95-6994-4738-805e-c1c4c5b577c7.txt"))()
-local A = M:AW()
+local MaruLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/LuaCrack/Setting/refs/heads/main/427daa95-6994-4738-805e-c1c4c5b577c7.txt"))()
+local A = MaruLib:AddWindows()
 
 -- MAIN TAB
-local T1 = A:T({ N = "Main" })
-local I = T1:AS("Left", { N = "" })
+local T1 = A:T({ Name = "Main" })
+local I = T1:AddSection("Left", { Name = "" })
 
-local af = false
-I:AT({
-N = "Farm chest tp",
-CB = fn(state)
-af = state
-if af then
-task.spawn(fn()
-local p = game.Players.LocalPlayer
-local c = p.Character or p.CharacterAdded:Wait()
-local hrp = c:WaitForChild("HumanoidRootPart")
+local autofarm = false
+I:AddToggle({
+Name = "Farm chest tp",
+Callback = function(state)
+autofarm = state
+if autofarm then
+task.spawn(function()
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
 local chestFolder = workspace:WaitForChild("ChestModels")
 local chestNames = {"GoldChest", "DiamondChest", "SilverChest"}
 
-local fn getAllChests()  
+local function getAllChests()  
                 local chests = {}  
                 for _, chest in pairs(chestFolder:GetChildren()) do  
                     for _, name in ipairs(chestNames) do  
-                        if chest.N == name then  
+                        if chest.Name == name then  
                             local part = chest.PrimaryPart or chest:FindFirstChildWhichIsA("BasePart")  
                             if part then  
                                 table.insert(chests, part)  
@@ -33,10 +33,10 @@ local fn getAllChests()
                 return chests  
             end  
 
-            while af do  
+            while autofarm do  
                 local chests = getAllChests()  
                 for _, chest in ipairs(chests) do  
-                    if not af then break end  
+                    if not autofarm then break end  
                     if chest and chest:IsDescendantOf(workspace) then  
                         hrp.CFrame = chest.CFrame + Vector3.new(0, 5, 0)  
                         task.wait(1.2)  
@@ -51,8 +51,8 @@ end
 })
 
 I:AddButton({
-N = "Titles",
-CB = fn()
+Name = "Titles",
+Callback = function()
 local Player = game.Players.LocalPlayer
 game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("getTitles")
 Player.PlayerGui.Main.Titles.Visible = true
@@ -60,8 +60,8 @@ end
 })
 
 -- TELEPORT TAB
-local T2 = A:T({ N = "Tab dịch chuyển" })
-local TeleportSection = T2:AS("Left", { N = "Islands" })
+local T2 = A:T({ Name = "Tab dịch chuyển" })
+local TeleportSection = T2:AddSection("Left", { Name = "Islands" })
 
 local islands = {
 ["Đảo Hoả Băng"] = Vector3.new(-5444, 16, -5245),
@@ -80,19 +80,19 @@ local islands = {
 
 for name, position in pairs(islands) do
 TeleportSection:AddButton({
-N = name,
-CB = fn()
-local p = game.Players.LocalPlayer
-local c = p.Character or p.CharacterAdded:Wait()
-local hrp = c:WaitForChild("HumanoidRootPart")
+Name = name,
+Callback = function()
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
 hrp.CFrame = CFrame.new(position + Vector3.new(0, 5, 0))
 end
 })
 end
 
 TeleportSection:AddButton({
-N = "Teleport to Sea 1",
-CB = fn()
+Name = "Teleport to Sea 1",
+Callback = function()
 if game.PlaceId ~= 2753915549 then
 game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("TravelMain")
 end
@@ -100,8 +100,8 @@ end
 })
 
 TeleportSection:AddButton({
-N = "Teleport to Sea 2",
-CB = fn()
+Name = "Teleport to Sea 2",
+Callback = function()
 if game.PlaceId ~= 4442272183 then
 game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("TravelDressrosa")
 end
@@ -109,8 +109,8 @@ end
 })
 
 TeleportSection:AddButton({
-N = "Teleport to Sea 3",
-CB = fn()
+Name = "Teleport to Sea 3",
+Callback = function()
 if game.PlaceId ~= 7449423635 then
 game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("TravelZou")
 end
@@ -118,24 +118,24 @@ end
 })
 
 -- SHOP TAB
-local T3 = A:T({ N = "Shop" })
-local Shop = T3:AS("Left", { N = "Cửa hàng" })
+local T3 = A:T({ Name = "Shop" })
+local Shop = T3:AddSection("Left", { Name = "Cửa hàng" })
 
-local fn FireRemote(...)
+local function FireRemote(...)
 game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(...)
 end
 
 Shop:AddButton({
-N = "Reset Stats",
-CB = fn()
+Name = "Reset Stats",
+Callback = function()
 FireRemote("BlackbeardReward", "Refund", "1")
 FireRemote("BlackbeardReward", "Refund", "2")
 end
 })
 
 Shop:AddButton({
-N = "Race Reroll",
-CB = fn()
+Name = "Race Reroll",
+Callback = function()
 FireRemote("BlackbeardReward", "Reroll", "1")
 FireRemote("BlackbeardReward", "Reroll", "2")
 end
@@ -143,14 +143,14 @@ end
 
 -- Auto Random Fruit nhanh hơn
 local autoRandomFruit = false
-Shop:AT({
-N = "Auto Random Fruit",
-CB = fn(state)
+Shop:AddToggle({
+Name = "Auto Random Fruit",
+Callback = function(state)
 autoRandomFruit = state
 if autoRandomFruit then
-task.spawn(fn()
+task.spawn(function()
 while autoRandomFruit do
-pcall(fn()
+pcall(function()
 FireRemote("Cousin", "Buy")
 end)
 task.wait(0.001) -- tốc độ random nhanh hơn
@@ -161,38 +161,38 @@ end
 })
 
 Shop:AddButton({
-N = "Buy GodHuman",
-CB = fn()
+Name = "Buy GodHuman",
+Callback = function()
 FireRemote("BuyGodhuman")
 end
 })
 
 -- SETTING TAB
-local T4 = A:T({ N = "Setting" })
-local SettingSection = T4:AS("Left", { N = "Fast Attack" })
+local T4 = A:T({ Name = "Setting" })
+local SettingSection = T4:AddSection("Left", { Name = "Fast Attack" })
 
 local superFastAttack = false
-local fn getAttackFunction()
+local function getAttackFunction()
 for _, func in pairs(getgc(true)) do
-if type(func) == "fn" and getfenv(func).script and debug.getinfo(func).name == "attack" then
+if type(func) == "function" and getfenv(func).script and debug.getinfo(func).name == "attack" then
 return func
 end
 end
 return nil
 end
 
-SettingSection:AT({
-N = "Fast Attack",
-CB = fn(state)
+SettingSection:AddToggle({
+Name = "Fast Attack",
+Callback = function(state)
 superFastAttack = state
 if superFastAttack then
-task.spawn(fn()
+task.spawn(function()
 local attackFunc = getAttackFunction()
 while superFastAttack do
-pcall(fn()
-local p = game.Players.LocalPlayer
-local c = p.Character or p.CharacterAdded:Wait()
-local tool = c:FindFirstChildOfClass("Tool")
+pcall(function()
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local tool = character:FindFirstChildOfClass("Tool")
 if tool and attackFunc then
 attackFunc()
 end
@@ -203,3 +203,4 @@ end)
 end
 end
 })
+
