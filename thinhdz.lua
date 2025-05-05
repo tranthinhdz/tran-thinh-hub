@@ -1,12 +1,206 @@
---[[
- .____                  ________ ___.    _____                           __                
- |    |    __ _______   \_____  \\_ |___/ ____\_ __  ______ ____ _____ _/  |_  ___________ 
- |    |   |  |  \__  \   /   |   \| __ \   __\  |  \/  ___// ___\\__  \\   __\/  _ \_  __ \
- |    |___|  |  // __ \_/    |    \ \_\ \  | |  |  /\___ \\  \___ / __ \|  | (  <_> )  | \/
- |_______ \____/(____  /\_______  /___  /__| |____//____  >\___  >____  /__|  \____/|__|   
-         \/          \/         \/    \/                \/     \/     \/                   
-          \_Welcome to LuaObfuscator.com   (Alpha 0.10.9) ~  Much Love, Ferib 
+local MaruLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/LuaCrack/Setting/refs/heads/main/427daa95-6994-4738-805e-c1c4c5b577c7.txt"))()
+local A = MaruLib:AddWindows()
 
-]]--
+-- MAIN TAB
+local T1 = A:T({ Name = "Main" })
+local I = T1:AddSection("Left", { Name = "" })
 
-local StrToNumber=tonumber;local Byte=string.byte;local Char=string.char;local Sub=string.sub;local Subg=string.gsub;local Rep=string.rep;local Concat=table.concat;local Insert=table.insert;local LDExp=math.ldexp;local GetFEnv=getfenv or function() return _ENV;end ;local Setmetatable=setmetatable;local PCall=pcall;local Select=select;local Unpack=unpack or table.unpack ;local ToNumber=tonumber;local function VMCall(ByteString,vmenv,...) local DIP=1;local repeatNext;ByteString=Subg(Sub(ByteString,5),"..",function(byte) if (Byte(byte,2)==81) then local FlatIdent_89940=0;while true do if (FlatIdent_89940==0) then repeatNext=StrToNumber(Sub(byte,1,1));return "";end end else local a=Char(StrToNumber(byte,16));if repeatNext then local FlatIdent_95CAC=0;local b;while true do if (FlatIdent_95CAC==1) then return b;end if (FlatIdent_95CAC==0) then b=Rep(a,repeatNext);repeatNext=nil;FlatIdent_95CAC=1;end end else return a;end end end);local function gBit(Bit,Start,End) if End then local FlatIdent_7F9F4=0;local Res;while true do if (FlatIdent_7F9F4==0) then Res=(Bit/(2^(Start-1)))%(2^(((End-1) -(Start-1)) + 1)) ;return Res-(Res%1) ;end end else local Plc=2^(Start-1) ;return (((Bit%(Plc + Plc))>=Plc) and 1) or 0 ;end end local function gBits8() local a=Byte(ByteString,DIP,DIP);DIP=DIP + 1 ;return a;end local function gBits16() local a,b=Byte(ByteString,DIP,DIP + 2 );DIP=DIP + 2 ;return (b * 256) + a ;end local function gBits32() local FlatIdent_8D327=0;local a;local b;local c;local d;while true do if (FlatIdent_8D327==0) then a,b,c,d=Byte(ByteString,DIP,DIP + 3 );DIP=DIP + 4 ;FlatIdent_8D327=1;end if (FlatIdent_8D327==1) then return (d * 16777216) + (c * 65536) + (b * 256) + a ;end end end local function gFloat() local Left=gBits32();local Right=gBits32();local IsNormal=1;local Mantissa=(gBit(Right,1,20) * (2^32)) + Left ;local Exponent=gBit(Right,21,31);local Sign=((gBit(Right,32)==1) and  -1) or 1 ;if (Exponent==0) then if (Mantissa==0) then return Sign * 0 ;else local FlatIdent_67C40=0;while true do if (FlatIdent_67C40==0) then Exponent=1;IsNormal=0;break;end end end elseif (Exponent==2047) then return ((Mantissa==0) and (Sign * (1/0))) or (Sign * NaN) ;end return LDExp(Sign,Exponent-1023 ) * (IsNormal + (Mantissa/(2^52))) ;end local function gString(Len) local FlatIdent_89ECE=0;local Str;local FStr;while true do if (FlatIdent_89ECE==3) then return Concat(FStr);end if (FlatIdent_89ECE==2) then FStr={};for Idx=1, #Str do FStr[Idx]=Char(Byte(Sub(Str,Idx,Idx)));end FlatIdent_89ECE=3;end if (FlatIdent_89ECE==1) then Str=Sub(ByteString,DIP,(DIP + Len) -1 );DIP=DIP + Len ;FlatIdent_89ECE=2;end if (FlatIdent_89ECE==0) then Str=nil;if  not Len then Len=gBits32();if (Len==0) then return "";end end FlatIdent_89ECE=1;end end end local gInt=gBits32;local function _R(...) return {...},Select("#",...);end local function Deserialize() local Instrs={};local Functions={};local Lines={};local Chunk={Instrs,Functions,nil,Lines};local ConstCount=gBits32();local Consts={};for Idx=1,ConstCount do local Type=gBits8();local Cons;if (Type==1) then Cons=gBits8()~=0 ;elseif (Type==2) then Cons=gFloat();elseif (Type==3) then Cons=gString();end Consts[Idx]=Cons;end Chunk[3]=gBits8();for Idx=1,gBits32() do local Descriptor=gBits8();if (gBit(Descriptor,1,1)==0) then local FlatIdent_8199B=0;local Type;local Mask;local Inst;while true do if (FlatIdent_8199B==2) then if (gBit(Mask,1,1)==1) then Inst[2]=Consts[Inst[2]];end if (gBit(Mask,2,2)==1) then Inst[3]=Consts[Inst[3]];end FlatIdent_8199B=3;end if (1==FlatIdent_8199B) then Inst={gBits16(),gBits16(),nil,nil};if (Type==0) then Inst[3]=gBits16();Inst[4]=gBits16();elseif (Type==1) then Inst[3]=gBits32();elseif (Type==2) then Inst[3]=gBits32() -(2^16) ;elseif (Type==3) then local FlatIdent_6FA1=0;while true do if (0==FlatIdent_6FA1) then Inst[3]=gBits32() -(2^16) ;Inst[4]=gBits16();break;end end end FlatIdent_8199B=2;end if (FlatIdent_8199B==0) then Type=gBit(Descriptor,2,3);Mask=gBit(Descriptor,4,6);FlatIdent_8199B=1;end if (FlatIdent_8199B==3) then if (gBit(Mask,3,3)==1) then Inst[4]=Consts[Inst[4]];end Instrs[Idx]=Inst;break;end end end end for Idx=1,gBits32() do Functions[Idx-1 ]=Deserialize();end return Chunk;end local function Wrap(Chunk,Upvalues,Env) local Instr=Chunk[1];local Proto=Chunk[2];local Params=Chunk[3];return function(...) local Instr=Instr;local Proto=Proto;local Params=Params;local _R=_R;local VIP=1;local Top= -1;local Vararg={};local Args={...};local PCount=Select("#",...) -1 ;local Lupvals={};local Stk={};for Idx=0,PCount do if (Idx>=Params) then Vararg[Idx-Params ]=Args[Idx + 1 ];else Stk[Idx]=Args[Idx + 1 ];end end local Varargsz=(PCount-Params) + 1 ;local Inst;local Enum;while true do local FlatIdent_61B23=0;while true do if (FlatIdent_61B23==0) then Inst=Instr[VIP];Enum=Inst[1];FlatIdent_61B23=1;end if (FlatIdent_61B23==1) then if (Enum<=53) then if (Enum<=26) then if (Enum<=12) then if (Enum<=5) then if (Enum<=2) then if (Enum<=0) then local B;local A;Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];B=Stk[Inst[3]];Stk[A + 1 ]=B;Stk[A]=B[Stk[Inst[4]]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]={};VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Stk[Inst[4]]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Stk[Inst[4]]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]][Stk[Inst[3]]]=Stk[Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Stk[Inst[4]]];elseif (Enum==1) then local A=Inst[2];local Step=Stk[A + 2 ];local Index=Stk[A] + Step ;Stk[A]=Index;if (Step>0) then if (Index<=Stk[A + 1 ]) then VIP=Inst[3];Stk[A + 3 ]=Index;end elseif (Index>=Stk[A + 1 ]) then local FlatIdent_946F=0;while true do if (FlatIdent_946F==0) then VIP=Inst[3];Stk[A + 3 ]=Index;break;end end end else do return;end end elseif (Enum<=3) then if (Stk[Inst[2]]==Inst[4]) then VIP=VIP + 1 ;else VIP=Inst[3];end elseif (Enum>4) then local FlatIdent_3A655=0;local A;while true do if (FlatIdent_3A655==5) then Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;FlatIdent_3A655=6;end if (7==FlatIdent_3A655) then Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;FlatIdent_3A655=8;end if (6==FlatIdent_3A655) then Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;FlatIdent_3A655=7;end if (4==FlatIdent_3A655) then Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Stk[Inst[4]]];VIP=VIP + 1 ;FlatIdent_3A655=5;end if (FlatIdent_3A655==1) then Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;FlatIdent_3A655=2;end if (FlatIdent_3A655==2) then Inst=Instr[VIP];Stk[Inst[2]]=Env[Inst[3]];VIP=VIP + 1 ;FlatIdent_3A655=3;end if (FlatIdent_3A655==8) then Inst=Instr[VIP];A=Inst[2];Stk[A]=Stk[A](Unpack(Stk,A + 1 ,Inst[3]));FlatIdent_3A655=9;end if (FlatIdent_3A655==9) then VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]][Stk[Inst[3]]]=Stk[Inst[4]];break;end if (FlatIdent_3A655==0) then A=nil;Stk[Inst[2]][Stk[Inst[3]]]=Stk[Inst[4]];VIP=VIP + 1 ;FlatIdent_3A655=1;end if (FlatIdent_3A655==3) then Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;FlatIdent_3A655=4;end end elseif (Inst[2]==Stk[Inst[4]]) then VIP=VIP + 1 ;else VIP=Inst[3];end elseif (Enum<=8) then if (Enum<=6) then local A=Inst[2];Stk[A](Unpack(Stk,A + 1 ,Top));elseif (Enum>7) then local FlatIdent_8E53E=0;local B;local A;while true do if (FlatIdent_8E53E==5) then Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Stk[Inst[4]]];VIP=VIP + 1 ;Inst=Instr[VIP];FlatIdent_8E53E=6;end if (FlatIdent_8E53E==8) then Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];break;end if (FlatIdent_8E53E==0) then B=nil;A=nil;A=Inst[2];Stk[A]=Stk[A](Unpack(Stk,A + 1 ,Inst[3]));FlatIdent_8E53E=1;end if (FlatIdent_8E53E==6) then Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Stk[Inst[4]]];FlatIdent_8E53E=7;end if (FlatIdent_8E53E==7) then VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]][Stk[Inst[3]]]=Stk[Inst[4]];VIP=VIP + 1 ;FlatIdent_8E53E=8;end if (FlatIdent_8E53E==4) then VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;FlatIdent_8E53E=5;end if (FlatIdent_8E53E==1) then VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3]~=0 ;VIP=VIP + 1 ;FlatIdent_8E53E=2;end if (FlatIdent_8E53E==3) then Stk[A]=B[Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]={};FlatIdent_8E53E=4;end if (FlatIdent_8E53E==2) then Inst=Instr[VIP];A=Inst[2];B=Stk[Inst[3]];Stk[A + 1 ]=B;FlatIdent_8E53E=3;end end else local B;local A;Stk[Inst[2]][Stk[Inst[3]]]=Stk[Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];Stk[A](Unpack(Stk,A + 1 ,Inst[3]));VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];B=Stk[Inst[3]];Stk[A + 1 ]=B;Stk[A]=B[Stk[Inst[4]]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]={};VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Stk[Inst[4]]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Stk[Inst[4]]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]][Stk[Inst[3]]]=Stk[Inst[4]];end elseif (Enum<=10) then if (Enum>9) then local FlatIdent_6053C=0;local A;while true do if (FlatIdent_6053C==2) then Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];Stk[A](Unpack(Stk,A + 1 ,Inst[3]));FlatIdent_6053C=3;end if (FlatIdent_6053C==4) then VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Upvalues[Inst[3]];FlatIdent_6053C=5;end if (FlatIdent_6053C==3) then VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Upvalues[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Upvalues[Inst[3]];FlatIdent_6053C=4;end if (FlatIdent_6053C==6) then VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];Stk[A](Unpack(Stk,A + 1 ,Inst[3]));VIP=VIP + 1 ;Inst=Instr[VIP];FlatIdent_6053C=7;end if (FlatIdent_6053C==5) then VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];FlatIdent_6053C=6;end if (FlatIdent_6053C==0) then A=nil;Stk[Inst[2]]=Upvalues[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;FlatIdent_6053C=1;end if (FlatIdent_6053C==7) then VIP=Inst[3];break;end if (FlatIdent_6053C==1) then Inst=Instr[VIP];Stk[Inst[2]]=Upvalues[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;FlatIdent_6053C=2;end end else Stk[Inst[2]]=Stk[Inst[3]][Stk[Inst[4]]];end elseif (Enum>11) then local A;Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];Stk[A](Unpack(Stk,A + 1 ,Inst[3]));VIP=VIP + 1 ;Inst=Instr[VIP];VIP=Inst[3];else local FlatIdent_66799=0;local Results;local Edx;local Limit;local B;local A;while true do if (4==FlatIdent_66799) then for Idx=A,Top do Edx=Edx + 1 ;Stk[Idx]=Results[Edx];end VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];Results={Stk[A](Unpack(Stk,A + 1 ,Top))};Edx=0;FlatIdent_66799=5;end if (FlatIdent_66799==5) then for Idx=A,Inst[4] do local FlatIdent_64E40=0;while true do if (FlatIdent_64E40==0) then Edx=Edx + 1 ;Stk[Idx]=Results[Edx];break;end end end VIP=VIP + 1 ;Inst=Instr[VIP];VIP=Inst[3];break;end if (FlatIdent_66799==0) then Results=nil;Edx=nil;Results,Limit=nil;B=nil;A=nil;Stk[Inst[2]]=Stk[Inst[3]];FlatIdent_66799=1;end if (FlatIdent_66799==3) then VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];Results,Limit=_R(Stk[A](Stk[A + 1 ]));Top=(Limit + A) -1 ;Edx=0;FlatIdent_66799=4;end if (2==FlatIdent_66799) then VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];B=Stk[Inst[3]];Stk[A + 1 ]=B;Stk[A]=B[Inst[4]];FlatIdent_66799=3;end if (FlatIdent_66799==1) then VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Env[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Upvalues[Inst[3]];FlatIdent_66799=2;end end end elseif (Enum<=19) then if (Enum<=15) then if (Enum<=13) then local A;Stk[Inst[2]]=Env[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Stk[Inst[4]]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];Stk[A]=Stk[A](Unpack(Stk,A + 1 ,Inst[3]));VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]][Stk[Inst[3]]]=Stk[Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Env[Inst[3]];elseif (Enum==14) then local A=Inst[2];local Index=Stk[A];local Step=Stk[A + 2 ];if (Step>0) then if (Index>Stk[A + 1 ]) then VIP=Inst[3];else Stk[A + 3 ]=Index;end elseif (Index<Stk[A + 1 ]) then VIP=Inst[3];else Stk[A + 3 ]=Index;end else local A;Stk[Inst[2]]=Upvalues[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Upvalues[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Upvalues[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];Stk[A](Unpack(Stk,A + 1 ,Inst[3]));VIP=VIP + 1 ;Inst=Instr[VIP];do return;end end elseif (Enum<=17) then if (Enum==16) then Stk[Inst[2]]=Env[Inst[3]];else local FlatIdent_8D1A5=0;local A;local Results;local Limit;local Edx;while true do if (1==FlatIdent_8D1A5) then Top=(Limit + A) -1 ;Edx=0;FlatIdent_8D1A5=2;end if (0==FlatIdent_8D1A5) then A=Inst[2];Results,Limit=_R(Stk[A](Stk[A + 1 ]));FlatIdent_8D1A5=1;end if (FlatIdent_8D1A5==2) then for Idx=A,Top do Edx=Edx + 1 ;Stk[Idx]=Results[Edx];end break;end end end elseif (Enum>18) then Stk[Inst[2]]={};else local A;Stk[Inst[2]]=Upvalues[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Upvalues[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];Stk[A](Unpack(Stk,A + 1 ,Inst[3]));VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Upvalues[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Upvalues[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Upvalues[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];Stk[A](Unpack(Stk,A + 1 ,Inst[3]));VIP=VIP + 1 ;Inst=Instr[VIP];VIP=Inst[3];end elseif (Enum<=22) then if (Enum<=20) then local FlatIdent_AC2F=0;local A;while true do if (FlatIdent_AC2F==0) then A=Inst[2];Stk[A](Stk[A + 1 ]);break;end end elseif (Enum==21) then local FlatIdent_68E92=0;local B;local A;while true do if (FlatIdent_68E92==4) then A=Inst[2];B=Stk[Inst[3]];Stk[A + 1 ]=B;Stk[A]=B[Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];FlatIdent_68E92=5;end if (FlatIdent_68E92==0) then B=nil;A=nil;A=Inst[2];B=Stk[Inst[3]];Stk[A + 1 ]=B;Stk[A]=B[Inst[4]];FlatIdent_68E92=1;end if (6==FlatIdent_68E92) then A=Inst[2];Stk[A](Unpack(Stk,A + 1 ,Inst[3]));break;end if (FlatIdent_68E92==3) then Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];FlatIdent_68E92=4;end if (FlatIdent_68E92==5) then Stk[Inst[2]]=Upvalues[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];FlatIdent_68E92=6;end if (FlatIdent_68E92==2) then VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];Stk[A]=Stk[A](Unpack(Stk,A + 1 ,Inst[3]));VIP=VIP + 1 ;Inst=Instr[VIP];FlatIdent_68E92=3;end if (FlatIdent_68E92==1) then VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Upvalues[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];FlatIdent_68E92=2;end end else local FlatIdent_6D399=0;local A;while true do if (FlatIdent_6D399==5) then VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];FlatIdent_6D399=6;end if (FlatIdent_6D399==2) then Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];Stk[A]=Stk[A](Unpack(Stk,A + 1 ,Inst[3]));FlatIdent_6D399=3;end if (FlatIdent_6D399==0) then A=nil;Stk[Inst[2]]=Env[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;FlatIdent_6D399=1;end if (FlatIdent_6D399==1) then Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;FlatIdent_6D399=2;end if (FlatIdent_6D399==3) then VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]] + Stk[Inst[4]] ;VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]][Inst[3]]=Stk[Inst[4]];FlatIdent_6D399=4;end if (FlatIdent_6D399==6) then Stk[A](Stk[A + 1 ]);VIP=VIP + 1 ;Inst=Instr[VIP];VIP=Inst[3];break;end if (FlatIdent_6D399==4) then VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Env[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];FlatIdent_6D399=5;end end end elseif (Enum<=24) then if (Enum>23) then local FlatIdent_19F98=0;local A;while true do if (FlatIdent_19F98==0) then A=Inst[2];Stk[A]=Stk[A](Unpack(Stk,A + 1 ,Inst[3]));break;end end else local FlatIdent_30046=0;local A;local Results;local Limit;local Edx;while true do if (FlatIdent_30046==2) then for Idx=A,Top do local FlatIdent_75224=0;while true do if (FlatIdent_75224==0) then Edx=Edx + 1 ;Stk[Idx]=Results[Edx];break;end end end break;end if (FlatIdent_30046==0) then A=Inst[2];Results,Limit=_R(Stk[A](Unpack(Stk,A + 1 ,Top)));FlatIdent_30046=1;end if (FlatIdent_30046==1) then Top=(Limit + A) -1 ;Edx=0;FlatIdent_30046=2;end end end elseif (Enum==25) then local FlatIdent_64E7F=0;local NewProto;local NewUvals;local Indexes;while true do if (1==FlatIdent_64E7F) then Indexes={};NewUvals=Setmetatable({},{__index=function(_,Key) local FlatIdent_22216=0;local Val;while true do if (0==FlatIdent_22216) then Val=Indexes[Key];return Val[1][Val[2]];end end end,__newindex=function(_,Key,Value) local FlatIdent_2FA59=0;local Val;while true do if (0==FlatIdent_2FA59) then Val=Indexes[Key];Val[1][Val[2]]=Value;break;end end end});FlatIdent_64E7F=2;end if (FlatIdent_64E7F==2) then for Idx=1,Inst[4] do local FlatIdent_DFF4=0;local Mvm;while true do if (FlatIdent_DFF4==0) then VIP=VIP + 1 ;Mvm=Instr[VIP];FlatIdent_DFF4=1;end if (FlatIdent_DFF4==1) then if (Mvm[1]==38) then Indexes[Idx-1 ]={Stk,Mvm[3]};else Indexes[Idx-1 ]={Upvalues,Mvm[3]};end Lupvals[ #Lupvals + 1 ]=Indexes;break;end end end Stk[Inst[2]]=Wrap(NewProto,NewUvals,Env);break;end if (FlatIdent_64E7F==0) then NewProto=Proto[Inst[3]];NewUvals=nil;FlatIdent_64E7F=1;end end else local A=Inst[2];Top=(A + Varargsz) -1 ;for Idx=A,Top do local VA=Vararg[Idx-A ];Stk[Idx]=VA;end end elseif (Enum<=39) then if (Enum<=32) then if (Enum<=29) then if (Enum<=27) then local FlatIdent_1B881=0;local B;local A;while true do if (FlatIdent_1B881==0) then B=nil;A=nil;Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;FlatIdent_1B881=1;end if (FlatIdent_1B881==6) then Stk[A]=Stk[A](Unpack(Stk,A + 1 ,Inst[3]));VIP=VIP + 1 ;Inst=Instr[VIP];Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];FlatIdent_1B881=7;end if (FlatIdent_1B881==5) then Stk[Inst[2]]=Stk[Inst[3]][Inst[4]];VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];FlatIdent_1B881=6;end if (FlatIdent_1B881==2) then Stk[Inst[2]]=Env[Inst[3]];VIP=VIP + 1 ;Inst=Instr[VIP];A=Inst[2];FlatIdent_1B881=3;end if (FlatIdent_1B881==12) then Inst=Instr[VIP];Stk[Inst[2]]=Inst[3];VIP=VIP + 1 ;Inst=Instr[VIP];FlatIdent_1B881=13;end if (FlatIdent_1B881==1) then Inst=Instr[VIP];Stk[Inst[2]]=Stk[In
+local autofarm = false
+I:AddToggle({
+Name = "Farm chest tp",
+Callback = function(state)
+autofarm = state
+if autofarm then
+task.spawn(function()
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+local chestFolder = workspace:WaitForChild("ChestModels")
+local chestNames = {"GoldChest", "DiamondChest", "SilverChest"}
+
+local function getAllChests()  
+                local chests = {}  
+                for _, chest in pairs(chestFolder:GetChildren()) do  
+                    for _, name in ipairs(chestNames) do  
+                        if chest.Name == name then  
+                            local part = chest.PrimaryPart or chest:FindFirstChildWhichIsA("BasePart")  
+                            if part then  
+                                table.insert(chests, part)  
+                            end  
+                        end  
+                    end  
+                end  
+                return chests  
+            end  
+
+            while autofarm do  
+                local chests = getAllChests()  
+                for _, chest in ipairs(chests) do  
+                    if not autofarm then break end  
+                    if chest and chest:IsDescendantOf(workspace) then  
+                        hrp.CFrame = chest.CFrame + Vector3.new(0, 5, 0)  
+                        task.wait(1.2)  
+                    end  
+                end  
+                task.wait(0.5)  
+            end  
+        end)  
+    end  
+end
+
+})
+
+I:AddButton({
+Name = "Titles",
+Callback = function()
+local Player = game.Players.LocalPlayer
+game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("getTitles")
+Player.PlayerGui.Main.Titles.Visible = true
+end
+})
+
+-- TELEPORT TAB
+local T2 = A:T({ Name = "Tab dịch chuyển" })
+local TeleportSection = T2:AddSection("Left", { Name = "Islands" })
+
+local islands = {
+["Đảo Hoả Băng"] = Vector3.new(-5444, 16, -5245),
+["Đấu trường bóng tối"] = Vector3.new(3755, 15, -3497),
+["Vương quốc hoa hồng"] = Vector3.new(-4, 19, 2821),
+["Hòn đảo bị lãng quên"] = Vector3.new(-3058, 239, -10188),
+["Thuyền ma"] = Vector3.new(923, 125, 32853),
+["Nghĩa địa"] = Vector3.new(-5398, 48, -737),
+["Khu vực xanh"] = Vector3.new(-2267, 73, -2686),
+["Lâu đài băng giá"] = Vector3.new(5988, 294, -6648),
+["Đảo đánh rip_indra"] = Vector3.new(-26820, 7, 385),
+["Đảo trời"] = Vector3.new(-262, 49326, -35270),
+["Núi tuyết"] = Vector3.new(793, 412, -5251),
+["Quán cà phê"] = Vector3.new(-385, 73, 297)
+}
+
+for name, position in pairs(islands) do
+TeleportSection:AddButton({
+Name = name,
+Callback = function()
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+hrp.CFrame = CFrame.new(position + Vector3.new(0, 5, 0))
+end
+})
+end
+
+TeleportSection:AddButton({
+Name = "Teleport to Sea 1",
+Callback = function()
+if game.PlaceId ~= 2753915549 then
+game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("TravelMain")
+end
+end
+})
+
+TeleportSection:AddButton({
+Name = "Teleport to Sea 2",
+Callback = function()
+if game.PlaceId ~= 4442272183 then
+game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("TravelDressrosa")
+end
+end
+})
+
+TeleportSection:AddButton({
+Name = "Teleport to Sea 3",
+Callback = function()
+if game.PlaceId ~= 7449423635 then
+game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("TravelZou")
+end
+end
+})
+
+-- SHOP TAB
+local T3 = A:T({ Name = "Shop" })
+local Shop = T3:AddSection("Left", { Name = "Cửa hàng" })
+
+local function FireRemote(...)
+game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(...)
+end
+
+Shop:AddButton({
+Name = "Reset Stats",
+Callback = function()
+FireRemote("BlackbeardReward", "Refund", "1")
+FireRemote("BlackbeardReward", "Refund", "2")
+end
+})
+
+Shop:AddButton({
+Name = "Race Reroll",
+Callback = function()
+FireRemote("BlackbeardReward", "Reroll", "1")
+FireRemote("BlackbeardReward", "Reroll", "2")
+end
+})
+
+-- Auto Random Fruit nhanh hơn
+local autoRandomFruit = false
+Shop:AddToggle({
+Name = "Auto Random Fruit",
+Callback = function(state)
+autoRandomFruit = state
+if autoRandomFruit then
+task.spawn(function()
+while autoRandomFruit do
+pcall(function()
+FireRemote("Cousin", "Buy")
+end)
+task.wait(0.001) -- tốc độ random nhanh hơn
+end
+end)
+end
+end
+})
+
+Shop:AddButton({
+Name = "Buy GodHuman",
+Callback = function()
+FireRemote("BuyGodhuman")
+end
+})
+
+-- SETTING TAB
+local T4 = A:T({ Name = "Setting" })
+local SettingSection = T4:AddSection("Left", { Name = "Fast Attack" })
+
+local superFastAttack = false
+local function getAttackFunction()
+for _, func in pairs(getgc(true)) do
+if type(func) == "function" and getfenv(func).script and debug.getinfo(func).name == "attack" then
+return func
+end
+end
+return nil
+end
+
+SettingSection:AddToggle({
+Name = "Fast Attack",
+Callback = function(state)
+superFastAttack = state
+if superFastAttack then
+task.spawn(function()
+local attackFunc = getAttackFunction()
+while superFastAttack do
+pcall(function()
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local tool = character:FindFirstChildOfClass("Tool")
+if tool and attackFunc then
+attackFunc()
+end
+end)
+task.wait(0.01)
+end
+end)
+end
+end
+})
+
