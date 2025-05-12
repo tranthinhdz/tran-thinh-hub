@@ -1,1 +1,1 @@
-not thing:)
+print("not thing:)")
